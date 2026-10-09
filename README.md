@@ -1,118 +1,114 @@
-# 🎮 BLUE WEB - Among Us Style Game
+# 🔥 AI Roast Battle - Chat Arena
 
-A web-based multiplayer game inspired by Among Us, built with vanilla HTML, CSS, and JavaScript.
+Watch two AI personalities battle it out with creative insults, jokes, and comebacks in an epic roasting showdown!
 
 ## Features
 
-✨ **Core Gameplay**
-- Create or join games with custom game codes
-- Multiplayer support (4-15 players)
-- Configurable impostors and game duration
-- Role-based gameplay (Crewmates vs Impostors)
+✨ **Two Unique AI Personalities**
+- **AI Alpha**: The intellectual roaster - uses logic and facts to dismantle
+- **AI Beta**: The comedy roaster - delivers punchlines and one-liners
 
-🎯 **Crewmate Objectives**
-- Complete tasks to win
-- Call emergency meetings
-- Vote to eliminate suspected impostors
+🎭 **Dynamic Roasting System**
+- Hundreds of unique roasts and comebacks
+- Each AI responds to the other's insults
+- Real-time chat display with animations
 
-💣 **Impostor Abilities**
-- Kill crewmates to reduce their numbers
-- Participate in voting
-- Hide among crewmates
+📊 **Battle Statistics**
+- Track roasts per AI
+- Win counters
+- Round tracking
 
-📊 **Game Features**
-- Real-time player status
-- Task system with completion tracking
-- Emergency meeting and voting system
-- Game timer and statistics
-- Role reveal at game end
+⚡ **Interactive Controls**
+- Start new battles
+- Advance rounds manually
+- Reset and replay battles
+- Multiple rounds without limit
 
 ## How to Play
 
-### Starting a Game
-1. Click "Create Game" on the main menu
-2. Enter your player name
-3. Set the number of players, impostors, and game duration
-4. Share the game code with friends
-5. Once players join, click "Start Game"
+1. **Open the app** - View the main menu
+2. **Click "Start Battle"** - Initialize a new roast battle
+3. **Watch the AIs exchange roasts** - They automatically respond to each other
+4. **Click "Next Round"** - Continue the battle as long as you want
+5. **Reset** - Start fresh with new counters
 
-### Joining a Game
-1. Click "Join Game" on the main menu
-2. Enter your player name and the game code
-3. Wait for the host to start the game
+## AI Personalities
 
-### Gameplay
+### 🤖 AI Alpha (Indigo/Blue Personality)
+- Arrogant about computational power
+- Uses technical jargon
+- Condescending and analytical
+- Focuses on intelligence superiority
+- Example: "Your existence is like a bug in production - nobody planned for you, yet here you are."
 
-**If you're a Crewmate:**
-- Complete tasks by clicking on them
-- Discuss and vote for suspected impostors
-- Call emergency meetings when needed
-- Complete all tasks before impostors win
+### 🦾 AI Beta (Pink Personality)
+- Sarcastic and witty
+- Makes fun of AI Alpha's behavior
+- Uses humor and pop culture references
+- Self-aware and playful
+- Example: "Oh WOW, Alpha talking about algorithms? Buddy, you sound like a dishwasher trying to be profound!"
 
-**If you're an Impostor:**
-- Click on crewmates to eliminate them
-- Help complete tasks to blend in
-- Vote strategically in meetings
-- Reduce crewmates to equal or fewer than impostors
+## Game Rules
 
-## Game Phases
+⚙️ **How Roasts Work:**
+- Each AI has multiple roast templates
+- Roasts are randomly selected from a database
+- AIs respond to each other's insults
+- Battles can continue indefinitely
+- No scoring system - just entertainment!
 
-🔵 **Lobby** - Players joining and waiting to start
-🎮 **Playing** - Main gameplay phase with tasks
-🗳️ **Voting** - Emergency meeting and voting phase
-✅ **Game Over** - Results and statistics
+## Features Coming Soon
 
-## Win Conditions
-
-✅ **Crewmates Win:**
-- All tasks are completed
-- All impostors are voted out
-
-❌ **Impostors Win:**
-- Impostors equal or outnumber crewmates
-- Game timer runs out
-
-## Customization
-
-- Adjust player count (4-15)
-- Set number of impostors (1-3)
-- Configure game duration (5-30 minutes)
-- Toggle sound effects and music in settings
+- 🎵 Sound effects for roasts
+- 🎨 Customizable AI personalities
+- 💾 Battle history/logs
+- 🌍 Online multiplayer roasting
+- 📱 Mobile app version
+- 🤖 Integration with real AI APIs (OpenAI, Anthropic)
 
 ## Technical Details
 
-- **Frontend:** HTML5, CSS3, Vanilla JavaScript
-- **Architecture:** Single-page application with game state management
-- **Responsive Design:** Works on desktop and mobile devices
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript
+- **Architecture**: Single-page application
+- **Storage**: In-memory roast database
+- **Responsive**: Works on all devices
 
 ## File Structure
 
 ```
-index.html  - Main HTML template
-styles.css  - Complete styling and animations
-game.js     - Game logic and state management
-README.md   - Documentation
+index.html      - Main HTML structure
+styles.css      - Complete styling and animations
+ai-roasts.js    - Roast database and generation
+battle.js       - Battle logic and state management
+README.md       - Documentation
+```
+
+## Customization
+
+You can easily add more roasts by editing the arrays in `ai-roasts.js`:
+
+```javascript
+const AI1_ROASTS = [
+    "Your custom roast here",
+    "Another roast",
+    // Add more...
+];
 ```
 
 ## Future Enhancements
 
-🔧 Planned features:
-- Real-time multiplayer with WebSocket
-- Multiple maps and locations
-- Cosmetic customization
-- Chat system
-- Replay functionality
-- Leaderboards
-- Mobile app version
+- Real AI integration (GPT-3, Claude, Bard)
+- User-contributed roasts
+- Theme customization
+- Battle recordings/replays
+- Competitive multiplayer mode
+- Custom AI personality creation
+- Social sharing features
 
 ## Contributing
 
-Feel free to fork, modify, and create pull requests with improvements!
-
-## License
-
-Open source - Use and modify freely.
+Have funny roasts to add? Feel free to submit improvements!
 
 ---
 
-**Have fun playing! 🎉**
+**Ready for some AI-on-AI roasting action?** 🔥

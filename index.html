@@ -3,164 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blue Web - Among Us Style Game</title>
+    <title>AI Roast Battle - Chat Arena</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="app">
         <!-- Main Menu -->
-        <div id="mainMenu" class="screen">
+        <div id="mainMenu" class="screen active">
             <div class="menu-container">
-                <h1>🎮 BLUE WEB GAME</h1>
-                <p class="subtitle">A Web-Based Impostor Game</p>
+                <h1>🔥 AI ROAST BATTLE</h1>
+                <p class="subtitle">Watch Two AIs Roast Each Other</p>
                 <div class="menu-buttons">
-                    <button class="btn btn-primary" onclick="showCreateGame()">Create Game</button>
-                    <button class="btn btn-secondary" onclick="showJoinGame()">Join Game</button>
-                    <button class="btn btn-secondary" onclick="showSettings()">Settings</button>
+                    <button class="btn btn-primary" onclick="startBattle()">Start Battle</button>
+                    <button class="btn btn-secondary" onclick="showInfo()">How It Works</button>
                 </div>
             </div>
         </div>
 
-        <!-- Create Game Screen -->
-        <div id="createGameScreen" class="screen hidden">
+        <!-- Battle Screen -->
+        <div id="battleScreen" class="screen">
+            <div class="battle-container">
+                <!-- AI 1 Profile -->
+                <div class="ai-side ai-1">
+                    <div class="ai-profile">
+                        <div class="ai-avatar">🤖</div>
+                        <h2 id="ai1Name">AI Alpha</h2>
+                        <div class="ai-stats">
+                            <div class="stat">
+                                <span class="stat-label">Roasts</span>
+                                <span class="stat-value" id="ai1Roasts">0</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Wins</span>
+                                <span class="stat-value" id="ai1Wins">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Area -->
+                <div class="chat-area">
+                    <div class="chat-header">
+                        <h3>🔥 ROAST BATTLE ARENA 🔥</h3>
+                        <button class="close-btn" onclick="showMainMenu()">✕</button>
+                    </div>
+                    <div class="chat-messages" id="chatMessages"></div>
+                    <div class="chat-controls">
+                        <div class="control-buttons">
+                            <button class="btn btn-warning" id="nextRoundBtn" onclick="nextRound()">Next Round</button>
+                            <button class="btn btn-secondary" onclick="resetBattle()">Reset</button>
+                        </div>
+                        <div class="battle-status" id="battleStatus">AI Alpha is thinking...</div>
+                    </div>
+                </div>
+
+                <!-- AI 2 Profile -->
+                <div class="ai-side ai-2">
+                    <div class="ai-profile">
+                        <div class="ai-avatar">🦾</div>
+                        <h2 id="ai2Name">AI Beta</h2>
+                        <div class="ai-stats">
+                            <div class="stat">
+                                <span class="stat-label">Roasts</span>
+                                <span class="stat-value" id="ai2Roasts">0</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Wins</span>
+                                <span class="stat-value" id="ai2Wins">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Screen -->
+        <div id="infoScreen" class="screen">
             <div class="panel">
-                <h2>Create New Game</h2>
-                <form onsubmit="createGame(event)">
-                    <label>Player Name:</label>
-                    <input type="text" id="playerName" placeholder="Enter your name" required>
-                    
-                    <label>Number of Players:</label>
-                    <input type="number" id="playerCount" min="4" max="15" value="8" required>
-                    
-                    <label>Number of Impostors:</label>
-                    <input type="number" id="impostorCount" min="1" max="3" value="2" required>
-                    
-                    <label>Game Duration (minutes):</label>
-                    <input type="number" id="gameDuration" min="5" max="30" value="10" required>
-                    
-                    <div class="form-buttons">
-                        <button type="submit" class="btn btn-primary">Create Game</button>
-                        <button type="button" class="btn btn-secondary" onclick="showMainMenu()">Back</button>
+                <h2>How AI Roast Battle Works</h2>
+                <div class="info-content">
+                    <div class="info-section">
+                        <h3>🎯 The Concept</h3>
+                        <p>Two AI personalities battle it out with creative insults, jokes, and roasts. Watch them go back and forth trying to out-roast each other!</p>
                     </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Join Game Screen -->
-        <div id="joinGameScreen" class="screen hidden">
-            <div class="panel">
-                <h2>Join Game</h2>
-                <form onsubmit="joinGame(event)">
-                    <label>Player Name:</label>
-                    <input type="text" id="joinPlayerName" placeholder="Enter your name" required>
-                    
-                    <label>Game Code:</label>
-                    <input type="text" id="gameCode" placeholder="Enter game code" required>
-                    
-                    <div class="form-buttons">
-                        <button type="submit" class="btn btn-primary">Join</button>
-                        <button type="button" class="btn btn-secondary" onclick="showMainMenu()">Back</button>
+                    <div class="info-section">
+                        <h3>⚡ How It Works</h3>
+                        <ol>
+                            <li>Click "Start Battle" to begin</li>
+                            <li>AI Alpha delivers the first roast</li>
+                            <li>AI Beta fires back with their own roast</li>
+                            <li>Click "Next Round" to continue the battle</li>
+                            <li>Watch the chat build up with epic roasts!</li>
+                        </ol>
                     </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Waiting for Players -->
-        <div id="waitingScreen" class="screen hidden">
-            <div class="panel">
-                <h2>Waiting for Players</h2>
-                <p class="game-code">Game Code: <strong id="displayGameCode"></strong></p>
-                <div class="player-list">
-                    <h3>Players (<span id="playerCountDisplay">0</span>/<span id="maxPlayerDisplay">8</span>):</h3>
-                    <ul id="playersList"></ul>
-                </div>
-                <div class="form-buttons">
-                    <button id="startGameBtn" class="btn btn-primary" onclick="startGame()" disabled>Start Game</button>
-                    <button class="btn btn-secondary" onclick="leaveGame()">Leave</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Game Screen -->
-        <div id="gameScreen" class="screen hidden">
-            <div class="game-container">
-                <div class="hud">
-                    <div class="hud-item">
-                        <span>Time: </span>
-                        <span id="timeDisplay">10:00</span>
+                    <div class="info-section">
+                        <h3>🎭 AI Personalities</h3>
+                        <p><strong>AI Alpha:</strong> The intellectual roaster - uses facts and logic to dismantle</p>
+                        <p><strong>AI Beta:</strong> The comedy roaster - delivers punchlines and one-liners</p>
                     </div>
-                    <div class="hud-item">
-                        <span>Role: </span>
-                        <span id="roleDisplay" class="role-badge">Crewmate</span>
-                    </div>
-                    <div class="hud-item">
-                        <span>Players Alive: </span>
-                        <span id="aliveCountDisplay">0</span>
+                    <div class="info-section">
+                        <h3>📊 Scoring</h3>
+                        <p>Each roast counts! Keep battling to see which AI can deliver the most devastating comebacks.</p>
                     </div>
                 </div>
-
-                <div class="game-content">
-                    <div class="task-area">
-                        <h3>Tasks</h3>
-                        <div id="tasksList" class="tasks-list"></div>
-                    </div>
-                    <div class="players-area">
-                        <h3>Players</h3>
-                        <div id="gamePlayersList" class="game-players-list"></div>
-                    </div>
-                </div>
-
-                <div class="action-buttons">
-                    <button id="emergencyBtn" class="btn btn-warning" onclick="emergencyMeeting()">Emergency Meeting</button>
-                    <button id="killBtn" class="btn btn-danger hidden" onclick="killPlayer()">Kill</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Voting Screen -->
-        <div id="votingScreen" class="screen hidden">
-            <div class="panel">
-                <h2>Emergency Meeting - Vote</h2>
-                <p>Who is the Impostor?</p>
-                <div id="votingOptions" class="voting-grid"></div>
-                <div class="form-buttons">
-                    <button class="btn btn-secondary" onclick="skipVote()">Skip Vote</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Game Over Screen -->
-        <div id="gameOverScreen" class="screen hidden">
-            <div class="panel game-over-panel">
-                <h2 id="gameOverTitle">Game Over</h2>
-                <p id="gameOverMessage">Crewmates Win!</p>
-                <div id="gameStatsList" class="stats-list"></div>
-                <div class="form-buttons">
-                    <button class="btn btn-primary" onclick="showMainMenu()">Main Menu</button>
-                    <button class="btn btn-secondary" onclick="createGame()">Play Again</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Settings Screen -->
-        <div id="settingsScreen" class="screen hidden">
-            <div class="panel">
-                <h2>Settings</h2>
-                <div class="settings-group">
-                    <label>
-                        <input type="checkbox" id="soundToggle" checked>
-                        Sound Effects
-                    </label>
-                    <label>
-                        <input type="checkbox" id="musicToggle" checked>
-                        Background Music
-                    </label>
-                </div>
-                <button class="btn btn-secondary" onclick="showMainMenu()">Back</button>
+                <button class="btn btn-primary" onclick="showMainMenu()">Back to Menu</button>
             </div>
         </div>
     </div>
 
-    <script src="game.js"></script>
+    <script src="ai-roasts.js"></script>
+    <script src="battle.js"></script>
 </body>
 </html>
