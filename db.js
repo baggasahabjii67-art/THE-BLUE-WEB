@@ -1,32 +1,39 @@
-const STORAGE_KEY = 'blue-web-users';
-const SESSION_KEY = 'blue-web-current-user';
+const STORAGE_KEY = 'blue_web_users';
+const SESSION_KEY = 'blue_web_session';
 
 function generateBlueId() {
-  const partA = Math.random().toString(36).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
-  const partB = Math.random().toString(36).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
-  return `BLU-${partA}-${partB}`;
+  const part1 = Math.random().toString(36).substr(2, 8).toUpperCase();
+  const part2 = Math.random().toString(36).substr(2, 6).toUpperCase();
+  return `BLU-${part1}-${part2}`;
 }
 
-function readUsers() {
+function readAllUsers() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-  } catch {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : {};
+  } catch (e) {
+    console.error('Error reading users:', e);
     return {};
   }
 }
 
-function saveUsers(users) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+function saveAllUsers(users) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+  } catch (e) {
+    console.error('Error saving users:', e);
+  }
 }
 
 function getUserByBlueId(blueId) {
-  return readUsers()[blueId] || null;
+  const users = readAllUsers();
+  return users[blueId] || null;
 }
 
-function createUser({ username, email, password }) {
-  const users = readUsers();
+function registerUser(username, email, password) {
+  const users = readAllUsers();
   let blueId = generateBlueId();
-
+  
   while (users[blueId]) {
     blueId = generateBlueId();
   }
@@ -41,13 +48,15 @@ function createUser({ username, email, password }) {
   };
 
   users[blueId] = user;
-  saveUsers(users);
+  saveAllUsers(users);
   return user;
 }
 
 function loginUser(blueId, password) {
   const user = getUserByBlueId(blueId);
-  if (!user || user.password !== password) return null;
+  if (!user || user.password !== password) {
+    return null;
+  }
   localStorage.setItem(SESSION_KEY, blueId);
   return user;
 }
@@ -56,23 +65,23 @@ function logoutUser() {
   localStorage.removeItem(SESSION_KEY);
 }
 
-function getCurrentUser() {
-  const activeId = localStorage.getItem(SESSION_KEY);
-  if (!activeId) return null;
-  return getUserByBlueId(activeId);
+function getLoggedInUser() {
+  const blueId = localStorage.getItem(SESSION_KEY);
+  if (!blueId) return null;
+  return getUserByBlueId(blueId);
 }
 
-function updateUser(user) {
-  const users = readUsers();
+function updateUserData(user) {
+  const users = readAllUsers();
   users[user.blueId] = user;
-  saveUsers(users);
+  saveAllUsers(users);
   localStorage.setItem(SESSION_KEY, user.blueId);
 }
 
-function exportUserProfile(user) {
+function exportProfile(user) {
   return JSON.stringify({
     version: 1,
-    exportedAt: new Date().toISOString(),
+    exportDate: new Date().toISOString(),
     user: {
       blueId: user.blueId,
       username: user.username,
@@ -84,24 +93,25 @@ function exportUserProfile(user) {
   }, null, 2);
 }
 
-function importUserProfile(jsonText) {
-  const parsed = JSON.parse(jsonText);
-  if (!parsed || !parsed.user || !parsed.user.blueId || !parsed.user.username || !parsed.user.password) {
-    throw new Error('Invalid profile file.');
+function importProfile(jsonText) {
+  const profile = JSON.parse(jsonText);
+  if (!profile.user || !profile.user.blueId) {
+    throw new Error('Invalid profile file');
   }
 
-  const user = parsed.user;
-  const users = readUsers();
-  users[user.blueId] = {
-    blueId: user.blueId,
-    username: user.username,
-    email: user.email || '',
-    password: user.password,
-    createdAt: user.createdAt || new Date().toISOString(),
-    data: user.data || {}
+  const users = readAllUsers();
+  const userData = profile.user;
+  
+  users[userData.blueId] = {
+    blueId: userData.blueId,
+    username: userData.username,
+    email: userData.email || '',
+    password: userData.password,
+    createdAt: userData.createdAt || new Date().toISOString(),
+    data: userData.data || {}
   };
-
-  saveUsers(users);
-  localStorage.setItem(SESSION_KEY, user.blueId);
-  return users[user.blueId];
+  
+  saveAllUsers(users);
+  localStorage.setItem(SESSION_KEY, userData.blueId);
+  return users[userData.blueId];
 }

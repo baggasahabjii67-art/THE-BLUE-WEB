@@ -1,15 +1,18 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
+  // Elements
   const authScreen = document.getElementById('authScreen');
   const dashboardScreen = document.getElementById('dashboardScreen');
+  const tabButtons = document.querySelectorAll('.tab-btn');
   const loginForm = document.getElementById('loginForm');
   const signupForm = document.getElementById('signupForm');
-  const tabButtons = document.querySelectorAll('.tab-btn');
-
+  
+  // Login form
   const loginBlueId = document.getElementById('loginBlueId');
   const loginPassword = document.getElementById('loginPassword');
   const loginBtn = document.getElementById('loginBtn');
   const loginError = document.getElementById('loginError');
-
+  
+  // Signup form
   const signupUsername = document.getElementById('signupUsername');
   const signupEmail = document.getElementById('signupEmail');
   const signupPassword = document.getElementById('signupPassword');
@@ -18,166 +21,213 @@ document.addEventListener('DOMContentLoaded', () => {
   const signupError = document.getElementById('signupError');
   const blueIdBox = document.getElementById('blueIdBox');
   const generatedBlueId = document.getElementById('generatedBlueId');
-
-  const welcomeName = document.getElementById('welcomeName');
+  
+  // Dashboard
+  const welcomeMsg = document.getElementById('welcomeMsg');
   const profileBlueId = document.getElementById('profileBlueId');
   const profileUsername = document.getElementById('profileUsername');
   const profileEmail = document.getElementById('profileEmail');
   const profileCreated = document.getElementById('profileCreated');
   const userDataList = document.getElementById('userDataList');
-
-  const dataModal = document.getElementById('dataModal');
-  const dataKey = document.getElementById('dataKey');
-  const dataValue = document.getElementById('dataValue');
-  const dataError = document.getElementById('dataError');
-  const addDataBtn = document.getElementById('addDataBtn');
-  const saveDataBtn = document.getElementById('saveDataBtn');
-  const closeDataModal = document.getElementById('closeDataModal');
-
-  const importFileInput = document.getElementById('importFileInput');
-  const exportBtn = document.getElementById('exportBtn');
-  const importBtn = document.getElementById('importBtn');
   const logoutBtn = document.getElementById('logoutBtn');
   const copyBlueIdBtn = document.getElementById('copyBlueIdBtn');
+  
+  // Data modal
+  const addDataBtn = document.getElementById('addDataBtn');
+  const addDataModal = document.getElementById('addDataModal');
+  const dataKey = document.getElementById('dataKey');
+  const dataValue = document.getElementById('dataValue');
+  const saveDataBtn = document.getElementById('saveDataBtn');
+  const dataError = document.getElementById('dataError');
+  const closeDataModal = document.getElementById('closeDataModal');
+  
+  // Import/Export
+  const exportBtn = document.getElementById('exportBtn');
+  const importBtn = document.getElementById('importBtn');
+  const importFileInput = document.getElementById('importFileInput');
 
-  function switchTab(tab) {
-    tabButtons.forEach((button) => {
-      button.classList.toggle('active', button.dataset.tab === tab);
-    });
-
-    loginForm.classList.toggle('active', tab === 'login');
-    signupForm.classList.toggle('active', tab === 'signup');
+  // Functions
+  function showAuthScreen() {
+    authScreen.classList.add('active');
+    dashboardScreen.classList.remove('active');
   }
 
-  function renderDashboard(user) {
-    welcomeName.textContent = user.username;
+  function showDashboard() {
+    dashboardScreen.classList.add('active');
+    authScreen.classList.remove('active');
+    refreshDashboard();
+  }
+
+  function refreshDashboard() {
+    const user = getLoggedInUser();
+    if (!user) return;
+
+    welcomeMsg.textContent = `Welcome, ${user.username}!`;
     profileBlueId.textContent = user.blueId;
     profileUsername.textContent = user.username;
-    profileEmail.textContent = user.email || 'Not provided';
-    profileCreated.textContent = new Date(user.createdAt).toLocaleString();
+    profileEmail.textContent = user.email || 'Not set';
+    profileCreated.textContent = new Date(user.createdAt).toLocaleDateString();
 
-    const entries = Object.entries(user.data || {});
-    userDataList.innerHTML = entries.length
-      ? entries
-          .map(([key, value]) => {
-            const displayValue = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
-            return `<div class="data-item"><strong>${key}:</strong> ${displayValue}</div>`;
-          })
-          .join('')
-      : '<div class="data-item">No custom data yet.</div>';
-
-    authScreen.classList.remove('active');
-    dashboardScreen.classList.add('active');
+    const dataEntries = Object.entries(user.data || {});
+    if (dataEntries.length === 0) {
+      userDataList.innerHTML = '<div class="data-item">No custom data. Click <strong>+ Add Data</strong> to get started.</div>';
+    } else {
+      userDataList.innerHTML = dataEntries
+        .map(([key, value]) => {
+          const displayVal = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
+          return `<div class="data-item"><strong>${key}:</strong> ${displayVal}</div>`;
+        })
+        .join('');
+    }
   }
 
-  function renderLoginScreen() {
-    dashboardScreen.classList.remove('active');
-    authScreen.classList.add('active');
+  function switchTab(tabName) {
+    tabButtons.forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+    
+    loginForm.classList.remove('active');
+    signupForm.classList.remove('active');
+    
+    if (tabName === 'login') {
+      loginForm.classList.add('active');
+    } else {
+      signupForm.classList.add('active');
+    }
   }
 
-  tabButtons.forEach((button) => {
-    button.addEventListener('click', () => switchTab(button.dataset.tab));
+  function openDataModal() {
+    dataKey.value = '';
+    dataValue.value = '';
+    dataError.textContent = '';
+    addDataModal.classList.remove('hidden');
+    addDataModal.classList.add('active');
+  }
+
+  function closeDataModalFn() {
+    addDataModal.classList.add('hidden');
+    addDataModal.classList.remove('active');
+  }
+
+  // Event listeners - Tab switching
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
 
-  loginBtn.addEventListener('click', () => {
+  // Login
+  loginBtn.addEventListener('click', function() {
     loginError.textContent = '';
     const blueId = loginBlueId.value.trim();
     const password = loginPassword.value;
 
     if (!blueId || !password) {
-      loginError.textContent = 'Please enter your Blue ID and password.';
+      loginError.textContent = 'Please fill in all fields';
       return;
     }
 
     const user = loginUser(blueId, password);
     if (!user) {
-      loginError.textContent = 'Invalid Blue ID or password.';
+      loginError.textContent = 'Invalid Blue ID or password';
       return;
     }
 
-    renderDashboard(user);
     loginBlueId.value = '';
     loginPassword.value = '';
+    showDashboard();
   });
 
-  signupBtn.addEventListener('click', () => {
+  // Signup
+  signupBtn.addEventListener('click', function() {
     signupError.textContent = '';
     const username = signupUsername.value.trim();
     const email = signupEmail.value.trim();
     const password = signupPassword.value;
     const confirm = signupConfirm.value;
 
-    if (!username) {
-      signupError.textContent = 'Username is required.';
+    if (!username || !password) {
+      signupError.textContent = 'Username and password are required';
       return;
     }
 
-    if (!password || password.length < 6) {
-      signupError.textContent = 'Password must be at least 6 characters.';
+    if (password.length < 6) {
+      signupError.textContent = 'Password must be at least 6 characters';
       return;
     }
 
     if (password !== confirm) {
-      signupError.textContent = 'Passwords do not match.';
+      signupError.textContent = 'Passwords do not match';
       return;
     }
 
-    const user = createUser({ username, email, password });
+    const user = registerUser(username, email, password);
     generatedBlueId.textContent = user.blueId;
     blueIdBox.classList.remove('hidden');
-
+    
     signupUsername.value = '';
     signupEmail.value = '';
     signupPassword.value = '';
     signupConfirm.value = '';
   });
 
-  logoutBtn.addEventListener('click', () => {
+  // Logout
+  logoutBtn.addEventListener('click', function() {
     logoutUser();
-    renderLoginScreen();
+    showAuthScreen();
+    switchTab('login');
   });
 
-  addDataBtn.addEventListener('click', () => {
-    dataKey.value = '';
-    dataValue.value = '';
-    dataError.textContent = '';
-    dataModal.classList.remove('hidden');
+  // Copy Blue ID
+  copyBlueIdBtn.addEventListener('click', async function() {
+    const text = profileBlueId.textContent;
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      copyBlueIdBtn.textContent = '✓ Copied';
+      setTimeout(() => {
+        copyBlueIdBtn.textContent = '📋';
+      }, 2000);
+    } catch (err) {
+      console.error('Copy failed:', err);
+    }
   });
 
-  closeDataModal.addEventListener('click', () => {
-    dataModal.classList.add('hidden');
+  // Data modal
+  addDataBtn.addEventListener('click', openDataModal);
+  closeDataModal.addEventListener('click', closeDataModalFn);
+  addDataModal.addEventListener('click', function(e) {
+    if (e.target === addDataModal) closeDataModalFn();
   });
 
-  saveDataBtn.addEventListener('click', () => {
-    const user = getCurrentUser();
+  // Save data
+  saveDataBtn.addEventListener('click', function() {
+    const user = getLoggedInUser();
     const key = dataKey.value.trim();
-    const raw = dataValue.value.trim();
+    const rawValue = dataValue.value.trim();
 
     if (!user || !key) {
-      dataError.textContent = 'Please enter a key first.';
+      dataError.textContent = 'Please enter a key';
       return;
     }
 
-    let value = raw;
-
+    let value = rawValue;
     try {
-      if (raw) value = JSON.parse(raw);
+      if (rawValue) value = JSON.parse(rawValue);
     } catch {
-      value = raw;
+      value = rawValue;
     }
 
     user.data = user.data || {};
     user.data[key] = value;
-    updateUser(user);
-    renderDashboard(user);
-    dataModal.classList.add('hidden');
+    updateUserData(user);
+    closeDataModalFn();
+    refreshDashboard();
   });
 
-  exportBtn.addEventListener('click', () => {
-    const user = getCurrentUser();
+  // Export
+  exportBtn.addEventListener('click', function() {
+    const user = getLoggedInUser();
     if (!user) return;
 
-    const json = exportUserProfile(user);
+    const json = exportProfile(user);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -187,42 +237,35 @@ document.addEventListener('DOMContentLoaded', () => {
     URL.revokeObjectURL(url);
   });
 
-  importBtn.addEventListener('click', () => {
+  // Import
+  importBtn.addEventListener('click', function() {
     importFileInput.click();
   });
 
-  importFileInput.addEventListener('change', (event) => {
-    const file = event.target.files[0];
+  importFileInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = function(event) {
       try {
-        const importedUser = importUserProfile(e.target.result);
-        renderDashboard(importedUser);
-      } catch (error) {
-        alert('Import failed: ' + error.message);
+        const user = importProfile(event.target.result);
+        refreshDashboard();
+        showDashboard();
+      } catch (err) {
+        alert('Import failed: ' + err.message);
       }
     };
     reader.readAsText(file);
     importFileInput.value = '';
   });
 
-  copyBlueIdBtn.addEventListener('click', async () => {
-    const text = profileBlueId.textContent;
-    if (!text) return;
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch {
-      // ignore copy issue in unsupported browsers
-    }
-  });
-
-  const currentUser = getCurrentUser();
-  if (currentUser) {
-    renderDashboard(currentUser);
+  // Init
+  const logged = getLoggedInUser();
+  if (logged) {
+    showDashboard();
   } else {
-    renderLoginScreen();
+    showAuthScreen();
     switchTab('login');
   }
 });

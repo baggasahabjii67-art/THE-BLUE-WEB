@@ -1,183 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>THE BLUE WEB</title>
+    <title>🔵 THE BLUE WEB - Account System</title>
     <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
+</head>
+<body>
     <div id="app">
-      <section id="authScreen" class="screen active">
-        <div class="auth-card">
-          <h1>🔵 THE BLUE WEB</h1>
-          <p class="subtitle">No server. Local browser account system.</p>
+        <!-- Auth Screen -->
+        <section id="authScreen" class="screen active">
+            <div class="auth-container">
+                <div class="auth-box">
+                    <h1>🔵 THE BLUE WEB</h1>
+                    <p class="subtitle">Local Account System • No Server</p>
 
-          <div class="tabs">
-            <button class="tab-btn active" data-tab="login">Login</button>
-            <button class="tab-btn" data-tab="signup">Sign Up</button>
-          </div>
+                    <div class="tabs-wrapper">
+                        <button class="tab-btn active" data-tab="login">Login</button>
+                        <button class="tab-btn" data-tab="signup">Sign Up</button>
+                    </div>
 
-          <div id="loginForm" class="form-panel active">
-            <input id="loginBlueId" type="text" placeholder="Blue ID" />
-            <input id="loginPassword" type="password" placeholder="Password" />
-            <button id="loginBtn" class="primary-btn">Login</button>
-            <div id="loginError" class="error"></div>
-          </div>
+                    <!-- Login Form -->
+                    <form id="loginForm" class="form-section active">
+                        <div class="form-group">
+                            <label>Blue ID</label>
+                            <input id="loginBlueId" type="text" placeholder="BLU-XXXXXXXX-XXXXXX" />
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input id="loginPassword" type="password" placeholder="Enter password" />
+                        </div>
+                        <button type="button" id="loginBtn" class="btn btn-primary">Login</button>
+                        <div id="loginError" class="error-msg"></div>
+                    </form>
 
-          <div id="signupForm" class="form-panel">
-            <input id="signupUsername" type="text" placeholder="Username" />
-            <input id="signupEmail" type="email" placeholder="Email (optional)" />
-            <input id="signupPassword" type="password" placeholder="Password" />
-            <input id="signupConfirm" type="password" placeholder="Confirm password" />
-            <button id="signupBtn" class="primary-btn">Create Account</button>
-            <div id="signupError" class="error"></div>
-            <div id="blueIdBox" class="blue-id-box hidden">
-              <p>✅ Your Blue ID is ready.</p>
-              <strong id="generatedBlueId"></strong>
-              <small>This ID cannot be changed.</small>
+                    <!-- Signup Form -->
+                    <form id="signupForm" class="form-section">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input id="signupUsername" type="text" placeholder="Choose a username" maxlength="30" />
+                        </div>
+                        <div class="form-group">
+                            <label>Email (Optional)</label>
+                            <input id="signupEmail" type="email" placeholder="your@email.com" />
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input id="signupPassword" type="password" placeholder="Min 6 characters" />
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm Password</label>
+                            <input id="signupConfirm" type="password" placeholder="Confirm password" />
+                        </div>
+                        <button type="button" id="signupBtn" class="btn btn-primary">Create Account</button>
+                        <div id="signupError" class="error-msg"></div>
+                        <div id="blueIdBox" class="success-box hidden">
+                            <p class="success-title">✅ Account Created!</p>
+                            <p class="blue-id-label">Your Blue ID (Cannot be changed):</p>
+                            <code id="generatedBlueId" class="blue-id-code"></code>
+                            <small class="warning-text">Save this ID to login from another device</small>
+                        </div>
+                    </form>
+
+                    <div class="auth-footer">
+                        <p>💾 Data stored locally in your browser</p>
+                        <p>🔐 Use export/import to sync across browsers</p>
+                    </div>
+                </div>
             </div>
-          </div>
+        </section>
 
-          <div class="footer-note">
-            <p>💾 Saved in the browser local storage</p>
-            <p>🔐 Same account via import/export on another Chrome</p>
-          </div>
-        </div>
-      </section>
+        <!-- Dashboard Screen -->
+        <section id="dashboardScreen" class="screen">
+            <div class="dashboard-container">
+                <header class="top-bar">
+                    <div class="top-bar-left">
+                        <h2>🔵 THE BLUE WEB</h2>
+                        <p id="welcomeMsg" class="welcome-text"></p>
+                    </div>
+                    <button id="logoutBtn" class="btn btn-danger">Logout</button>
+                </header>
 
-      <section id="dashboardScreen" class="screen">
-        <div class="dashboard">
-          <header class="dashboard-header">
-            <h2>Welcome, <span id="welcomeName"></span></h2>
-            <button id="logoutBtn" class="secondary-btn">Logout</button>
-          </header>
+                <div class="dashboard-grid">
+                    <!-- Profile Card -->
+                    <div class="card">
+                        <h3 class="card-title">Your Profile</h3>
+                        <div class="profile-info">
+                            <div class="info-field">
+                                <span class="label">Blue ID</span>
+                                <div class="info-value-wrapper">
+                                    <code id="profileBlueId" class="code"></code>
+                                    <button id="copyBlueIdBtn" class="btn btn-sm btn-copy" title="Copy Blue ID">📋</button>
+                                </div>
+                            </div>
+                            <div class="info-field">
+                                <span class="label">Username</span>
+                                <span id="profileUsername" class="info-value"></span>
+                            </div>
+                            <div class="info-field">
+                                <span class="label">Email</span>
+                                <span id="profileEmail" class="info-value"></span>
+                            </div>
+                            <div class="info-field">
+                                <span class="label">Member Since</span>
+                                <span id="profileCreated" class="info-value"></span>
+                            </div>
+                        </div>
+                    </div>
 
-          <div class="cards">
-            <div class="card profile-card">
-              <h3>Profile</h3>
-              <div class="info-row">
-                <span>Blue ID</span>
-                <b id="profileBlueId"></b>
-              </div>
-              <div class="info-row">
-                <span>Username</span>
-                <b id="profileUsername"></b>
-              </div>
-              <div class="info-row">
-                <span>Email</span>
-                <b id="profileEmail"></b>
-              </div>
-              <div class="info-row">
-                <span>Created</span>
-                <b id="profileCreated"></b>
-              </div>
-              <button id="copyBlueIdBtn" class="secondary-btn small-btn">Copy Blue ID</button>
+                    <!-- Data Management Card -->
+                    <div class="card">
+                        <h3 class="card-title">Manage Data</h3>
+                        <div class="button-group">
+                            <button id="addDataBtn" class="btn btn-secondary">+ Add Data</button>
+                            <button id="exportBtn" class="btn btn-secondary">📥 Export</button>
+                            <button id="importBtn" class="btn btn-secondary">📤 Import</button>
+                        </div>
+                        <div id="userDataList" class="data-container"></div>
+                    </div>
+
+                    <!-- Cross-Browser Sync Card -->
+                    <div class="card">
+                        <h3 class="card-title">📱 Use on Another Browser</h3>
+                        <ol class="sync-guide">
+                            <li>Click <strong>📥 Export</strong> to save your profile</li>
+                            <li>Open THE BLUE WEB on another browser/device</li>
+                            <li>Click <strong>📤 Import</strong> and select your profile</li>
+                            <li>Login with your Blue ID and password</li>
+                        </ol>
+                    </div>
+                </div>
             </div>
-
-            <div class="card">
-              <h3>Data</h3>
-              <div class="button-row">
-                <button id="addDataBtn" class="secondary-btn">Add Data</button>
-                <button id="exportBtn" class="secondary-btn">Export</button>
-                <button id="importBtn" class="secondary-btn">Import</button>
-              </div>
-              <div id="userDataList" class="data-list"></div>
-            </div>
-
-            <div class="card">
-              <h3>Cross-browser login</h3>
-              <ol>
-                <li>Export your profile from this browser.</li>
-                <li>Open THE BLUE WEB in another Chrome.</li>
-                <li>Import the file there.</li>
-                <li>Log in with the same Blue ID and password.</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
     </div>
 
-    <div id="dataModal" class="modal hidden">
-      <div class="modal-content">
-        <div class="modal-head">
-          <h3>Add account data</h3>
-          <button id="closeDataModal" class="close-btn">×</button>
+    <!-- Add Data Modal -->
+    <div id="addDataModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Add Custom Data</h3>
+                <button id="closeDataModal" class="btn btn-icon">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Data Key</label>
+                    <input id="dataKey" type="text" placeholder="e.g., preferences, settings" />
+                </div>
+                <div class="form-group">
+                    <label>Data Value</label>
+                    <textarea id="dataValue" rows="6" placeholder="Enter as text or valid JSON"></textarea>
+                </div>
+                <button id="saveDataBtn" class="btn btn-primary">Save Data</button>
+                <div id="dataError" class="error-msg"></div>
+            </div>
         </div>
-        <input id="dataKey" type="text" placeholder="Key (example: preferences)" />
-        <textarea id="dataValue" rows="6" placeholder="Value as plain text or JSON"></textarea>
-        <button id="saveDataBtn" class="primary-btn">Save</button>
-        <div id="dataError" class="error"></div>
-      </div>
     </div>
 
+    <!-- Hidden File Input -->
     <input id="importFileInput" type="file" accept=".json" class="hidden" />
 
     <script src="db.js"></script>
     <script src="auth.js"></script>
-  </body>
+</body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
