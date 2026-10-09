@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Signup form
   const signupUsername = document.getElementById('signupUsername');
   const signupEmail = document.getElementById('signupEmail');
+  const signupBio = document.getElementById('signupBio');
   const signupPassword = document.getElementById('signupPassword');
   const signupConfirm = document.getElementById('signupConfirm');
   const signupBtn = document.getElementById('signupBtn');
@@ -28,9 +29,27 @@ document.addEventListener('DOMContentLoaded', function() {
   const profileUsername = document.getElementById('profileUsername');
   const profileEmail = document.getElementById('profileEmail');
   const profileCreated = document.getElementById('profileCreated');
+  const profileNameDisplay = document.getElementById('profileNameDisplay');
+  const profileBioDisplay = document.getElementById('profileBioDisplay');
+  const profileAvatar = document.getElementById('profileAvatar');
+  const avatarPlaceholder = document.getElementById('avatarPlaceholder');
   const userDataList = document.getElementById('userDataList');
   const logoutBtn = document.getElementById('logoutBtn');
+  const editProfileBtn = document.getElementById('editProfileBtn');
   const copyBlueIdBtn = document.getElementById('copyBlueIdBtn');
+  
+  // Edit profile modal
+  const editProfileModal = document.getElementById('editProfileModal');
+  const closeEditModal = document.getElementById('closeEditModal');
+  const editAvatarUrl = document.getElementById('editAvatarUrl');
+  const editAvatarPreview = document.getElementById('editAvatarPreview');
+  const editDisplayName = document.getElementById('editDisplayName');
+  const editBio = document.getElementById('editBio');
+  const editLocation = document.getElementById('editLocation');
+  const editPhone = document.getElementById('editPhone');
+  const editWebsite = document.getElementById('editWebsite');
+  const saveProfileBtn = document.getElementById('saveProfileBtn');
+  const editError = document.getElementById('editError');
   
   // Data modal
   const addDataBtn = document.getElementById('addDataBtn');
@@ -68,6 +87,22 @@ document.addEventListener('DOMContentLoaded', function() {
     profileEmail.textContent = user.email || 'Not set';
     profileCreated.textContent = new Date(user.createdAt).toLocaleDateString();
 
+    // Profile info
+    const profile = user.profile || {};
+    profileNameDisplay.textContent = profile.displayName || user.username;
+    profileBioDisplay.textContent = profile.bio || 'No bio set';
+
+    // Avatar
+    if (profile.avatarUrl) {
+      profileAvatar.src = profile.avatarUrl;
+      profileAvatar.style.display = 'block';
+      avatarPlaceholder.style.display = 'none';
+    } else {
+      profileAvatar.style.display = 'none';
+      avatarPlaceholder.style.display = 'flex';
+    }
+
+    // Data
     const dataEntries = Object.entries(user.data || {});
     if (dataEntries.length === 0) {
       userDataList.innerHTML = '<div class="data-item">No custom data. Click <strong>+ Add Data</strong> to get started.</div>';
@@ -92,6 +127,44 @@ document.addEventListener('DOMContentLoaded', function() {
       loginForm.classList.add('active');
     } else {
       signupForm.classList.add('active');
+    }
+  }
+
+  function openEditModal() {
+    const user = getLoggedInUser();
+    if (!user) return;
+    
+    const profile = user.profile || {};
+    editAvatarUrl.value = profile.avatarUrl || '';
+    editDisplayName.value = profile.displayName || user.username;
+    editBio.value = profile.bio || '';
+    editLocation.value = profile.location || '';
+    editPhone.value = profile.phone || '';
+    editWebsite.value = profile.website || '';
+    editError.textContent = '';
+    
+    updateAvatarPreview();
+    editProfileModal.classList.remove('hidden');
+    editProfileModal.classList.add('active');
+  }
+
+  function closeEditModalFn() {
+    editProfileModal.classList.add('hidden');
+    editProfileModal.classList.remove('active');
+  }
+
+  function updateAvatarPreview() {
+    const url = editAvatarUrl.value.trim();
+    if (url) {
+      editAvatarPreview.src = url;
+      editAvatarPreview.onload = () => {
+        editAvatarPreview.classList.add('show');
+      };
+      editAvatarPreview.onerror = () => {
+        editAvatarPreview.classList.remove('show');
+      };
+    } else {
+      editAvatarPreview.classList.remove('show');
     }
   }
 
@@ -140,6 +213,7 @@ document.addEventListener('DOMContentLoaded', function() {
     signupError.textContent = '';
     const username = signupUsername.value.trim();
     const email = signupEmail.value.trim();
+    const bio = signupBio.value.trim();
     const password = signupPassword.value;
     const confirm = signupConfirm.value;
 
@@ -158,14 +232,49 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    const user = registerUser(username, email, password);
+    const user = registerUser(username, email, password, bio);
     generatedBlueId.textContent = user.blueId;
     blueIdBox.classList.remove('hidden');
     
     signupUsername.value = '';
     signupEmail.value = '';
+    signupBio.value = '';
     signupPassword.value = '';
     signupConfirm.value = '';
+  });
+
+  // Edit Profile
+  editProfileBtn.addEventListener('click', openEditModal);
+  closeEditModal.addEventListener('click', closeEditModalFn);
+  editProfileModal.addEventListener('click', function(e) {
+    if (e.target === editProfileModal) closeEditModalFn();
+  });
+
+  editAvatarUrl.addEventListener('input', updateAvatarPreview);
+
+  saveProfileBtn.addEventListener('click', function() {
+    const user = getLoggedInUser();
+    if (!user) return;
+
+    editError.textContent = '';
+    const displayName = editDisplayName.value.trim();
+    
+    if (!displayName) {
+      editError.textContent = 'Display name is required';
+      return;
+    }
+
+    updateUserProfile(user, {
+      displayName,
+      avatarUrl: editAvatarUrl.value.trim(),
+      bio: editBio.value.trim(),
+      location: editLocation.value.trim(),
+      phone: editPhone.value.trim(),
+      website: editWebsite.value.trim()
+    });
+
+    closeEditModalFn();
+    refreshDashboard();
   });
 
   // Logout

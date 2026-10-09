@@ -30,7 +30,7 @@ function getUserByBlueId(blueId) {
   return users[blueId] || null;
 }
 
-function registerUser(username, email, password) {
+function registerUser(username, email, password, bio) {
   const users = readAllUsers();
   let blueId = generateBlueId();
   
@@ -43,7 +43,16 @@ function registerUser(username, email, password) {
     username,
     email: email || '',
     password,
+    bio: bio || '',
     createdAt: new Date().toISOString(),
+    profile: {
+      displayName: username,
+      avatarUrl: '',
+      location: '',
+      phone: '',
+      website: '',
+      bio: bio || ''
+    },
     data: {}
   };
 
@@ -78,6 +87,18 @@ function updateUserData(user) {
   localStorage.setItem(SESSION_KEY, user.blueId);
 }
 
+function updateUserProfile(user, profileData) {
+  user.profile = {
+    displayName: profileData.displayName || user.username,
+    avatarUrl: profileData.avatarUrl || '',
+    location: profileData.location || '',
+    phone: profileData.phone || '',
+    website: profileData.website || '',
+    bio: profileData.bio || ''
+  };
+  updateUserData(user);
+}
+
 function exportProfile(user) {
   return JSON.stringify({
     version: 1,
@@ -87,7 +108,9 @@ function exportProfile(user) {
       username: user.username,
       email: user.email,
       password: user.password,
+      bio: user.bio || '',
       createdAt: user.createdAt,
+      profile: user.profile || {},
       data: user.data || {}
     }
   }, null, 2);
@@ -107,7 +130,16 @@ function importProfile(jsonText) {
     username: userData.username,
     email: userData.email || '',
     password: userData.password,
+    bio: userData.bio || '',
     createdAt: userData.createdAt || new Date().toISOString(),
+    profile: userData.profile || {
+      displayName: userData.username,
+      avatarUrl: '',
+      location: '',
+      phone: '',
+      website: '',
+      bio: userData.bio || ''
+    },
     data: userData.data || {}
   };
   
