@@ -1,224 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>🔵 THE BLUE WEB - Account System</title>
-    <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue Web - Among Us Style Game</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="app">
-        <!-- Auth Screen -->
-        <section id="authScreen" class="screen active">
-            <div class="auth-container">
-                <div class="auth-box">
-                    <h1>🔵 THE BLUE WEB</h1>
-                    <p class="subtitle">Local Account System • No Server</p>
-
-                    <div class="tabs-wrapper">
-                        <button class="tab-btn active" data-tab="login">Login</button>
-                        <button class="tab-btn" data-tab="signup">Sign Up</button>
-                    </div>
-
-                    <!-- Login Form -->
-                    <form id="loginForm" class="form-section active">
-                        <div class="form-group">
-                            <label>Blue ID</label>
-                            <input id="loginBlueId" type="text" placeholder="BLU-XXXXXXXX-XXXXXX" />
-                        </div>
-                        <div class="form-group">
-                            <label>Password</label>
-                            <input id="loginPassword" type="password" placeholder="Enter password" />
-                        </div>
-                        <button type="button" id="loginBtn" class="btn btn-primary">Login</button>
-                        <div id="loginError" class="error-msg"></div>
-                    </form>
-
-                    <!-- Signup Form -->
-                    <form id="signupForm" class="form-section">
-                        <div class="form-group">
-                            <label>Username</label>
-                            <input id="signupUsername" type="text" placeholder="Choose a username" maxlength="30" />
-                        </div>
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input id="signupEmail" type="email" placeholder="your@email.com" />
-                        </div>
-                        <div class="form-group">
-                            <label>Bio (Optional)</label>
-                            <textarea id="signupBio" placeholder="Tell us about yourself" rows="2"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Password</label>
-                            <input id="signupPassword" type="password" placeholder="Min 6 characters" />
-                        </div>
-                        <div class="form-group">
-                            <label>Confirm Password</label>
-                            <input id="signupConfirm" type="password" placeholder="Confirm password" />
-                        </div>
-                        <button type="button" id="signupBtn" class="btn btn-primary">Create Account</button>
-                        <div id="signupError" class="error-msg"></div>
-                        <div id="blueIdBox" class="success-box hidden">
-                            <p class="success-title">✅ Account Created!</p>
-                            <p class="blue-id-label">Your Blue ID (Cannot be changed):</p>
-                            <code id="generatedBlueId" class="blue-id-code"></code>
-                            <small class="warning-text">Save this ID to login from another device</small>
-                        </div>
-                    </form>
-
-                    <div class="auth-footer">
-                        <p>💾 Data stored locally in your browser</p>
-                        <p>🔐 Use export/import to sync across browsers</p>
-                    </div>
+        <!-- Main Menu -->
+        <div id="mainMenu" class="screen">
+            <div class="menu-container">
+                <h1>🎮 BLUE WEB GAME</h1>
+                <p class="subtitle">A Web-Based Impostor Game</p>
+                <div class="menu-buttons">
+                    <button class="btn btn-primary" onclick="showCreateGame()">Create Game</button>
+                    <button class="btn btn-secondary" onclick="showJoinGame()">Join Game</button>
+                    <button class="btn btn-secondary" onclick="showSettings()">Settings</button>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- Dashboard Screen -->
-        <section id="dashboardScreen" class="screen">
-            <div class="dashboard-container">
-                <header class="top-bar">
-                    <div class="top-bar-left">
-                        <h2>🔵 THE BLUE WEB</h2>
-                        <p id="welcomeMsg" class="welcome-text"></p>
+        <!-- Create Game Screen -->
+        <div id="createGameScreen" class="screen hidden">
+            <div class="panel">
+                <h2>Create New Game</h2>
+                <form onsubmit="createGame(event)">
+                    <label>Player Name:</label>
+                    <input type="text" id="playerName" placeholder="Enter your name" required>
+                    
+                    <label>Number of Players:</label>
+                    <input type="number" id="playerCount" min="4" max="15" value="8" required>
+                    
+                    <label>Number of Impostors:</label>
+                    <input type="number" id="impostorCount" min="1" max="3" value="2" required>
+                    
+                    <label>Game Duration (minutes):</label>
+                    <input type="number" id="gameDuration" min="5" max="30" value="10" required>
+                    
+                    <div class="form-buttons">
+                        <button type="submit" class="btn btn-primary">Create Game</button>
+                        <button type="button" class="btn btn-secondary" onclick="showMainMenu()">Back</button>
                     </div>
-                    <div class="top-bar-right">
-                        <button id="editProfileBtn" class="btn btn-secondary">✏️ Edit Profile</button>
-                        <button id="logoutBtn" class="btn btn-danger">Logout</button>
-                    </div>
-                </header>
+                </form>
+            </div>
+        </div>
 
-                <div class="dashboard-grid">
-                    <!-- Profile Card -->
-                    <div class="card profile-card">
-                        <div class="profile-header">
-                            <div class="avatar-container">
-                                <img id="profileAvatar" class="avatar" src="" alt="Profile Picture" />
-                                <span id="avatarPlaceholder" class="avatar-placeholder">📷</span>
-                            </div>
-                            <div class="profile-summary">
-                                <h3 id="profileNameDisplay"></h3>
-                                <p id="profileBioDisplay" class="bio-text"></p>
-                            </div>
-                        </div>
-                        <div class="profile-info">
-                            <div class="info-field">
-                                <span class="label">Blue ID</span>
-                                <div class="info-value-wrapper">
-                                    <code id="profileBlueId" class="code"></code>
-                                    <button id="copyBlueIdBtn" class="btn btn-sm btn-copy" title="Copy Blue ID">📋</button>
-                                </div>
-                            </div>
-                            <div class="info-field">
-                                <span class="label">Username</span>
-                                <span id="profileUsername" class="info-value"></span>
-                            </div>
-                            <div class="info-field">
-                                <span class="label">Email</span>
-                                <span id="profileEmail" class="info-value"></span>
-                            </div>
-                            <div class="info-field">
-                                <span class="label">Member Since</span>
-                                <span id="profileCreated" class="info-value"></span>
-                            </div>
-                        </div>
+        <!-- Join Game Screen -->
+        <div id="joinGameScreen" class="screen hidden">
+            <div class="panel">
+                <h2>Join Game</h2>
+                <form onsubmit="joinGame(event)">
+                    <label>Player Name:</label>
+                    <input type="text" id="joinPlayerName" placeholder="Enter your name" required>
+                    
+                    <label>Game Code:</label>
+                    <input type="text" id="gameCode" placeholder="Enter game code" required>
+                    
+                    <div class="form-buttons">
+                        <button type="submit" class="btn btn-primary">Join</button>
+                        <button type="button" class="btn btn-secondary" onclick="showMainMenu()">Back</button>
                     </div>
+                </form>
+            </div>
+        </div>
 
-                    <!-- Data Management Card -->
-                    <div class="card">
-                        <h3 class="card-title">Manage Data</h3>
-                        <div class="button-group">
-                            <button id="addDataBtn" class="btn btn-secondary">+ Add Data</button>
-                            <button id="exportBtn" class="btn btn-secondary">📥 Export</button>
-                            <button id="importBtn" class="btn btn-secondary">📤 Import</button>
-                        </div>
-                        <div id="userDataList" class="data-container"></div>
-                    </div>
-
-                    <!-- Cross-Browser Sync Card -->
-                    <div class="card">
-                        <h3 class="card-title">📱 Use on Another Browser</h3>
-                        <ol class="sync-guide">
-                            <li>Click <strong>📥 Export</strong> to save your profile</li>
-                            <li>Open THE BLUE WEB on another browser/device</li>
-                            <li>Click <strong>📤 Import</strong> and select your profile</li>
-                            <li>Login with your Blue ID and password</li>
-                        </ol>
-                    </div>
+        <!-- Waiting for Players -->
+        <div id="waitingScreen" class="screen hidden">
+            <div class="panel">
+                <h2>Waiting for Players</h2>
+                <p class="game-code">Game Code: <strong id="displayGameCode"></strong></p>
+                <div class="player-list">
+                    <h3>Players (<span id="playerCountDisplay">0</span>/<span id="maxPlayerDisplay">8</span>):</h3>
+                    <ul id="playersList"></ul>
+                </div>
+                <div class="form-buttons">
+                    <button id="startGameBtn" class="btn btn-primary" onclick="startGame()" disabled>Start Game</button>
+                    <button class="btn btn-secondary" onclick="leaveGame()">Leave</button>
                 </div>
             </div>
-        </section>
-    </div>
+        </div>
 
-    <!-- Edit Profile Modal -->
-    <div id="editProfileModal" class="modal hidden">
-        <div class="modal-overlay"></div>
-        <div class="modal-box">
-            <div class="modal-header">
-                <h3>Edit Profile</h3>
-                <button id="closeEditModal" class="btn btn-icon">✕</button>
+        <!-- Game Screen -->
+        <div id="gameScreen" class="screen hidden">
+            <div class="game-container">
+                <div class="hud">
+                    <div class="hud-item">
+                        <span>Time: </span>
+                        <span id="timeDisplay">10:00</span>
+                    </div>
+                    <div class="hud-item">
+                        <span>Role: </span>
+                        <span id="roleDisplay" class="role-badge">Crewmate</span>
+                    </div>
+                    <div class="hud-item">
+                        <span>Players Alive: </span>
+                        <span id="aliveCountDisplay">0</span>
+                    </div>
+                </div>
+
+                <div class="game-content">
+                    <div class="task-area">
+                        <h3>Tasks</h3>
+                        <div id="tasksList" class="tasks-list"></div>
+                    </div>
+                    <div class="players-area">
+                        <h3>Players</h3>
+                        <div id="gamePlayersList" class="game-players-list"></div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="emergencyBtn" class="btn btn-warning" onclick="emergencyMeeting()">Emergency Meeting</button>
+                    <button id="killBtn" class="btn btn-danger hidden" onclick="killPlayer()">Kill</button>
+                </div>
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Profile Picture (URL)</label>
-                    <input id="editAvatarUrl" type="text" placeholder="https://example.com/avatar.jpg" />
+        </div>
+
+        <!-- Voting Screen -->
+        <div id="votingScreen" class="screen hidden">
+            <div class="panel">
+                <h2>Emergency Meeting - Vote</h2>
+                <p>Who is the Impostor?</p>
+                <div id="votingOptions" class="voting-grid"></div>
+                <div class="form-buttons">
+                    <button class="btn btn-secondary" onclick="skipVote()">Skip Vote</button>
                 </div>
-                <div class="avatar-preview">
-                    <img id="editAvatarPreview" class="avatar-small" src="" alt="Preview" />
+            </div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="gameOverScreen" class="screen hidden">
+            <div class="panel game-over-panel">
+                <h2 id="gameOverTitle">Game Over</h2>
+                <p id="gameOverMessage">Crewmates Win!</p>
+                <div id="gameStatsList" class="stats-list"></div>
+                <div class="form-buttons">
+                    <button class="btn btn-primary" onclick="showMainMenu()">Main Menu</button>
+                    <button class="btn btn-secondary" onclick="createGame()">Play Again</button>
                 </div>
-                <div class="form-group">
-                    <label>Display Name</label>
-                    <input id="editDisplayName" type="text" placeholder="Your display name" maxlength="50" />
+            </div>
+        </div>
+
+        <!-- Settings Screen -->
+        <div id="settingsScreen" class="screen hidden">
+            <div class="panel">
+                <h2>Settings</h2>
+                <div class="settings-group">
+                    <label>
+                        <input type="checkbox" id="soundToggle" checked>
+                        Sound Effects
+                    </label>
+                    <label>
+                        <input type="checkbox" id="musicToggle" checked>
+                        Background Music
+                    </label>
                 </div>
-                <div class="form-group">
-                    <label>Bio</label>
-                    <textarea id="editBio" placeholder="Tell us about yourself" rows="3"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Location (Optional)</label>
-                    <input id="editLocation" type="text" placeholder="City, Country" />
-                </div>
-                <div class="form-group">
-                    <label>Phone (Optional)</label>
-                    <input id="editPhone" type="tel" placeholder="+1234567890" />
-                </div>
-                <div class="form-group">
-                    <label>Website (Optional)</label>
-                    <input id="editWebsite" type="url" placeholder="https://yourwebsite.com" />
-                </div>
-                <button id="saveProfileBtn" class="btn btn-primary">Save Changes</button>
-                <div id="editError" class="error-msg"></div>
+                <button class="btn btn-secondary" onclick="showMainMenu()">Back</button>
             </div>
         </div>
     </div>
 
-    <!-- Add Data Modal -->
-    <div id="addDataModal" class="modal hidden">
-        <div class="modal-overlay"></div>
-        <div class="modal-box">
-            <div class="modal-header">
-                <h3>Add Custom Data</h3>
-                <button id="closeDataModal" class="btn btn-icon">✕</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Data Key</label>
-                    <input id="dataKey" type="text" placeholder="e.g., preferences, settings" />
-                </div>
-                <div class="form-group">
-                    <label>Data Value</label>
-                    <textarea id="dataValue" rows="6" placeholder="Enter as text or valid JSON"></textarea>
-                </div>
-                <button id="saveDataBtn" class="btn btn-primary">Save Data</button>
-                <div id="dataError" class="error-msg"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Hidden File Input -->
-    <input id="importFileInput" type="file" accept=".json" class="hidden" />
-
-    <script src="db.js"></script>
-    <script src="auth.js"></script>
+    <script src="game.js"></script>
 </body>
 </html>
